@@ -10,6 +10,7 @@ public class Response {
 	private String isAuthenticated;
 	private String isUpdated;
 	
+	
 	public String getStatus() {
 		return status;
 	}
