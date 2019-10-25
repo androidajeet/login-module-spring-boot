@@ -22,6 +22,21 @@ public class User {
 
 
 
+	protected  User() {
+		
+	}
+
+
+	public User(String userName, String name, String sex, String dob, String password) {
+		super();
+		this.userName = userName;
+		this.name = name;
+		this.sex = sex;
+		this.dob = dob;
+		this.password = password;
+	}
+	
+	
 	public String getUserName() {
 		return userName;
 	}

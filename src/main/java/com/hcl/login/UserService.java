@@ -1,6 +1,5 @@
 package com.hcl.login;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +14,11 @@ public class UserService {
 	Response response;
 
 	public List<User> getAllPersons() {
-		List<User> users = new ArrayList<User>();
-		userRepository.findAll().forEach(user -> users.add(user));
+		List<User> users = userRepository.findAll();
 		return users;
 	}
 
-	public User getUserByUsername(String username) {
-		User existedUser = null;
-		List<User> users = getAllPersons();
-		for (User user : users) {
-			if (user.getUserName().equals(username)) {
-				existedUser = user;
-				break;
-			}
-		}
-		return existedUser;
-	}
+
 
 	public void saveOrUpdate(User user) {
 		userRepository.save(user);
@@ -39,7 +27,8 @@ public class UserService {
 	public boolean auth(String username ,String password ) {
 		// existedUser.getPassword().equals(user.getPassword())
 		boolean login = false;
-		User existedUser = getUserByUsername(username);
+		//User existedUser = getUserByUsername(username);
+		User existedUser = userRepository.findByuserName(username);
 		if (existedUser != null) {
 			if (PasswordUtils.verifyUserPassword(password, existedUser.getPassword(), PasswordUtils.getSalt(30))    ) {
 				login = true;
@@ -51,11 +40,13 @@ public class UserService {
 	}
 
 	public boolean changePassword(String oldPassword, String newPassword, String userName) {
+		// existedUser.getPassword().equals(oldPassword)
 		boolean isUpdated = false;
-		User existedUser = getUserByUsername(userName);
+		//User existedUser = getUserByUsername(userName);
+		User existedUser = userRepository.findByuserName(userName);
 		if (existedUser != null) {
-			if (existedUser.getPassword().equals(oldPassword)) {
-				existedUser.setPassword(newPassword);
+			if (PasswordUtils.verifyUserPassword(oldPassword, existedUser.getPassword(), PasswordUtils.getSalt(30))) {
+				existedUser.setPassword(PasswordUtils.generateSecurePassword(newPassword, PasswordUtils.getSalt(30))    );
 				saveOrUpdate(existedUser);
 				isUpdated = true;
 			}
@@ -73,7 +64,8 @@ public class UserService {
 		} else {
 			User isUserExist = null;
 			try {
-				isUserExist = getUserByUsername(user.getUserName());
+				//isUserExist = getUserByUsername(user.getUserName());
+				isUserExist = userRepository.findByuserName(user.getUserName());
 				// System.out.println("isUserExist:" + isUserExist);
 			} catch (Exception e) {
 				e.printStackTrace();
