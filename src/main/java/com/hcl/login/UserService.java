@@ -2,90 +2,54 @@ package com.hcl.login;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+/**
+ * User Service
+ * 
+ * @author AjeetY
+ *
+ */
 
-@Service
-public class UserService {
+public interface UserService {
 
-	@Autowired
-	UserRepository userRepository;
-	@Autowired
-	Response response;
+	/**
+	 * sign up the user.
+	 * 
+	 * @param user user object.
+	 * @return saved user.
+	 */
+	public User signUp(User user);
 
-	public List<User> getAllPersons() {
-		List<User> users = userRepository.findAll();
-		return users;
-	}
+	/**
+	 * for authentication of user.
+	 * 
+	 * @param username username of user.
+	 * @param password password of user.
+	 * @return if user authenticated or not.
+	 */
+	public boolean auth(String username, String password);
 
+	/**
+	 * to change the password.
+	 * 
+	 * @param oldPassword existing password of user.
+	 * @param newPassword new password.
+	 * @param username    username of user.
+	 * @return if password changed successfully or not.
+	 */
+	public boolean changePassword(String oldPassword, String newPassword, String username);
 
+	/**
+	 * save the user to database.
+	 * 
+	 * @param user user object.
+	 * @return saved user.
+	 */
+	public User saveOrUpdate(User user);
 
-	public void saveOrUpdate(User user) {
-		userRepository.save(user);
-	}
-
-	public boolean auth(String username ,String password ) {
-		// existedUser.getPassword().equals(user.getPassword())
-		boolean login = false;
-		//User existedUser = getUserByUsername(username);
-		User existedUser = userRepository.findByuserName(username);
-		if (existedUser != null) {
-			if (PasswordUtils.verifyUserPassword(password, existedUser.getPassword(), PasswordUtils.getSalt(30))    ) {
-				login = true;
-			}
-		} else {
-			login = false;
-		}
-		return login;
-	}
-
-	public boolean changePassword(String oldPassword, String newPassword, String userName) {
-		// existedUser.getPassword().equals(oldPassword)
-		boolean isUpdated = false;
-		//User existedUser = getUserByUsername(userName);
-		User existedUser = userRepository.findByuserName(userName);
-		if (existedUser != null) {
-			if (PasswordUtils.verifyUserPassword(oldPassword, existedUser.getPassword(), PasswordUtils.getSalt(30))) {
-				existedUser.setPassword(PasswordUtils.generateSecurePassword(newPassword, PasswordUtils.getSalt(30))    );
-				saveOrUpdate(existedUser);
-				isUpdated = true;
-			}
-		} else {
-			isUpdated = false;
-		}
-		return isUpdated;
-	}
-
-	public Response signUp(User user) {
-		if (user.getUserName().length() <= 0 || user.getName().length() <= 0 || user.getDob().length() <= 0
-				|| user.getSex().length() <= 0 || user.getPassword().length() <= 0) {
-			response.setStatus("failed");
-			response.setLoginUrl("");
-		} else {
-			User isUserExist = null;
-			try {
-				//isUserExist = getUserByUsername(user.getUserName());
-				isUserExist = userRepository.findByuserName(user.getUserName());
-				// System.out.println("isUserExist:" + isUserExist);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			if (isUserExist == null) {
-				// Generate Salt.
-				String salt = PasswordUtils.getSalt(30);
-				// Protect user's password. The generated value can be stored in DB.
-				String securePassword = PasswordUtils.generateSecurePassword(user.getPassword(), salt);
-				user.setPassword(securePassword);
-
-				saveOrUpdate(user);
-				response.setStatus("success");
-				response.setLoginUrl("http://shoppingcart.com/login");
-			} else {
-				response.setStatus("failed");
-				response.setLoginUrl("");
-			}
-		}
-		return response;
-	}
-
+	/**
+	 * list of all users.
+	 * 
+	 * @return List of users.
+	 */
+	public List<User> getAllPersons();
 }
