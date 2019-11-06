@@ -6,6 +6,9 @@ import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,24 +52,20 @@ public class UserController {
 	 * @return Response object containing response of this request.
 	 */
 	@PostMapping("/signup")
-	private SignUpSuccessResponse signUpUser(@Valid @RequestBody(required = true) User user) {
-		if (user.getUserName().equals("") || user.getName().equals("") || user.getDob().equals("")
-				|| user.getSex().equals("") || user.getPassword().equals("")) {
+	private ResponseEntity<SignUpSuccessResponse> signUpUser(@Valid @RequestBody(required = true) User user) {
 
+		User responseFromSignup = userService.signUp(user);
+		if (responseFromSignup != null) {
+
+			
+			signUpSuccessResponse.setStatus("success");
+			signUpSuccessResponse.setLoginUrl("http://shoppingcart.com/login");
+
+		} else
 			throw new SignUpUserException("failed");
 
-		} else {
-			User responseFromSignup = userService.signUp(user);
-			if (responseFromSignup != null) {
-				signUpSuccessResponse.setStatus("success");
-				signUpSuccessResponse.setLoginUrl("http://shoppingcart.com/login");
-
-			} else
-				throw new SignUpUserException("failed");
-
-		}
-
-		return signUpSuccessResponse;
+		return new ResponseEntity<SignUpSuccessResponse>(signUpSuccessResponse, HttpStatus.OK);
+		// return signUpSuccessResponse;
 	}
 
 	/**
@@ -131,3 +130,10 @@ public class UserController {
 	}
 
 }
+
+//if (user.getUserName().equals("") || user.getName().equals("") || user.getDob().equals("")
+//|| user.getSex().equals("") || user.getPassword().equals("")) {
+//
+//throw new SignUpUserException("failed");
+//
+//} else {

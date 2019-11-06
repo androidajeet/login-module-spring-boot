@@ -3,6 +3,7 @@ package com.hcl.login;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 /**
@@ -16,6 +17,7 @@ import javax.validation.constraints.Size;
 public class User {
 
 	@Id
+	@NotBlank(message="userName should not blank")
 	private String userName;
 	@Size(min = 2 ,message="name should be atleast 2 charecters")
 	private String name;
@@ -23,6 +25,7 @@ public class User {
 	private String sex;
 	private String dob;
 	@Size(min = 5, message="password should be at least 5 charecters")
+	@NotBlank(message="password should not blank")
 	private String password;
 
 	protected User() {

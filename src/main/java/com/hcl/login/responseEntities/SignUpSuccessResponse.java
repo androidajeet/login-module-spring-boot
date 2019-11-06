@@ -1,5 +1,6 @@
 package com.hcl.login.responseEntities;
 
+//import org.springframework.hateoas.RepresentationModel;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component 
-public class SignUpSuccessResponse {
+public class SignUpSuccessResponse  {
 
 	private String status;
 	
